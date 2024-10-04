@@ -1,32 +1,40 @@
-"use client"
+'use client';
 
 import * as React from 'react';
-import { BottomNavigation, BottomNavigationAction } from '@mui/material';
-import { Home, AccountCircle, CloudUpload, HowToReg, ExitToApp } from '@mui/icons-material';
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import Box from '@mui/material/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 
-const BottomNav = () => {
-  const [value, setValue] = useState(0);  // Track the selected icon
-  const router = useRouter();
+// Import your icons
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import LoginIcon from '@mui/icons-material/Login';
+
+import { useRouter } from 'next/navigation';
+
+export default function SimpleBottomNavigation() {
+  const [value, setValue] = React.useState(0); // State to track the selected icon
+  const router = useRouter(); // Next.js router for navigation
 
   const handleNavigation = (newValue: number) => {
     setValue(newValue);
     switch (newValue) {
       case 0:
-        router.push('/home');  // Navigate to Home
+        router.push('/');  // Navigate to Home
         break;
       case 1:
         router.push('/profil');  // Navigate to Profile
         break;
       case 2:
-        router.push('/uploads');  // Navigate to Uploads
+        router.push('/prispevok');  // Navigate to Uploads
         break;
       case 3:
-        router.push('/registracia');  // Navigate to Registration
+        router.push('/auth/registracia');  // Navigate to Registration
         break;
       case 4:
-        router.push('/auth/odhlasenie');  // Navigate to Log Out
+        router.push('/auth/prihlasenie');  // Navigate to 
         break;
       default:
         break;
@@ -34,19 +42,27 @@ const BottomNav = () => {
   };
 
   return (
-    <BottomNavigation
-      showLabels
-      value={value}
-      onChange={(event, newValue) => handleNavigation(newValue)}
-      sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}  // Make it stick to the bottom
-    >
-      <BottomNavigationAction label="Home" icon={<Home />} />
-      <BottomNavigationAction label="Profile" icon={<AccountCircle />} />
-      <BottomNavigationAction label="Uploads" icon={<CloudUpload />} />
-      <BottomNavigationAction label="Register" icon={<HowToReg />} />
-      <BottomNavigationAction label="Log Out" icon={<ExitToApp />} />
-    </BottomNavigation>
+    <Box sx={{ width: '100%' }}>
+      <BottomNavigation
+        showLabels
+        value={value}
+        onChange={(event, newValue) => handleNavigation(newValue)}
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#ffffff',  // Background color for better visibility
+          zIndex: 1000,  // Ensure it's above other elements
+          borderTop: '1px solid #e0e0e0',  // Add a border for separation
+        }}
+      >
+        <BottomNavigationAction label="Domov" icon={<HomeIcon sx={{ fontSize: 30 }} />} />
+        <BottomNavigationAction label="Profil" icon={<PersonIcon sx={{ fontSize: 30 }} />} />
+        <BottomNavigationAction label="Prispevky" icon={<FileUploadIcon sx={{ fontSize: 30 }} />} />
+        <BottomNavigationAction label="Registracia" icon={<AppRegistrationIcon sx={{ fontSize: 30 }} />} />
+        <BottomNavigationAction label="Prihlasenie" icon={<LoginIcon sx={{ fontSize: 30 }} />} />
+      </BottomNavigation>
+    </Box>
   );
-};
-
-export default BottomNav;
+}
