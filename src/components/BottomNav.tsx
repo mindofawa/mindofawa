@@ -1,68 +1,74 @@
 'use client';
 
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-
-// Import your icons
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import LoginIcon from '@mui/icons-material/Login';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Avatar } from '@mui/material';
+import React, { useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+export default function NavBot() {
+  const { data: session } = useSession();  // Get session data
+  const router = useRouter();
+  const [value, setValue] = useState(0);
 
-export default function SimpleBottomNavigation() {
-  const [value, setValue] = React.useState(0); // State to track the selected icon
-  const router = useRouter(); // Next.js router for navigation
+  // Navigation items based on auth status
+  const navItemsUnauthenticated = [
+    { label: 'Domov', icon: <HomeIcon />, path: '/' },
+    { label: 'Prispevky', icon: <PostAddIcon />, path: '/prispevok' },
+    { label: 'Prihlásiť', icon: <LoginIcon />, path: '/auth/prihlasenie' },
+    { label: 'Registrovať', icon: <HowToRegIcon />, path: '/auth/registracia' },
+  ];
 
-  const handleNavigation = (newValue: number) => {
+  const navItemsAuthenticated = [
+    { label: 'Domov', icon: <HomeIcon />, path: '/' },
+    { label: 'Prispevky', icon: <PostAddIcon />, path: '/prispevok' },
+    { label: 'Pridať', icon: <PostAddIcon />, path: '/prispevok/novy' },  // Add new post
+    {
+      label: 'Profil',
+      icon: session?.user?.image ? <Avatar src={session.user.image} alt="Profile" /> : <PersonIcon />,
+      path: '/profil',
+    },
+    { label: 'Odhlásiť', icon: <LogoutIcon />, path: '/' },
+  ];
+
+  const handleNavigation = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-    switch (newValue) {
-      case 0:
-        router.push('/');  // Navigate to Home
-        break;
-      case 1:
-        router.push('/profil');  // Navigate to Profile
-        break;
-      case 2:
-        router.push('/prispevok');  // Navigate to Uploads
-        break;
-      case 3:
-        router.push('/auth/registracia');  // Navigate to Registration
-        break;
-      case 4:
-        router.push('/auth/prihlasenie');  // Navigate to 
-        break;
-      default:
-        break;
+    const selectedItem = session ? navItemsAuthenticated[newValue] : navItemsUnauthenticated[newValue];
+    if (selectedItem.label === 'Odhlásiť') {
+      signOut({ callbackUrl: '/' });  // Log out
+    } else {
+      router.push(selectedItem.path);  // Navigate
     }
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => handleNavigation(newValue)}
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: '#ffffff',  // Background color for better visibility
-          zIndex: 1000,  // Ensure it's above other elements
-          borderTop: '1px solid #e0e0e0',  // Add a border for separation
-        }}
-      >
-        <BottomNavigationAction label="Domov" icon={<HomeIcon sx={{ fontSize: 30 }} />} />
-        <BottomNavigationAction label="Profil" icon={<PersonIcon sx={{ fontSize: 30 }} />} />
-        <BottomNavigationAction label="Prispevky" icon={<FileUploadIcon sx={{ fontSize: 30 }} />} />
-        <BottomNavigationAction label="Registracia" icon={<AppRegistrationIcon sx={{ fontSize: 30 }} />} />
-        <BottomNavigationAction label="Prihlasenie" icon={<LoginIcon sx={{ fontSize: 30 }} />} />
-      </BottomNavigation>
-    </Box>
+    <BottomNavigation
+      value={value}
+      onChange={handleNavigation}
+      showLabels
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      {(session ? navItemsAuthenticated : navItemsUnauthenticated).map((item, index) => (
+        <BottomNavigationAction
+          key={index}
+          label={item.label}
+          icon={item.icon}
+        />
+      ))}
+    </BottomNavigation>
   );
 }

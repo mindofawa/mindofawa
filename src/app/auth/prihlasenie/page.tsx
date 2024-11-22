@@ -1,15 +1,20 @@
 // src/app/auth/prihlasenie/page.tsx
 
+'use client';
+import { signIn } from 'next-auth/react';
+//import { useRouter } from 'next/navigation';
 
-import Typography from '@mui/material/Typography';
+export default function LoginPage() {
+  //const router = useRouter();
 
-export const metadata = {Title: "Prihlasit | ZoskaSnap"};
+  const handleGoogleSignIn = async () => {
+    await signIn('google', { callbackUrl: '/' });
+  };
 
-export default function SignIn() {
-  
-  return(
-
-      <Typography> Prihlasit </Typography>
-
+  return (
+    <div style={{ padding: '50px', textAlign: 'center' }}>
+      <h2>Login</h2>
+      <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+    </div>
   );
 }
