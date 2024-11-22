@@ -14,7 +14,19 @@ export default function LoginPage() {
   return (
     <div style={{ padding: '50px', textAlign: 'center' }}>
       <h2>Login</h2>
-      <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+      <button
+  onClick={handleGoogleSignIn}
+  style={{
+    backgroundColor: 'blue',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  }}
+>
+  Sign in with Google
+</button>
     </div>
   );
 }
